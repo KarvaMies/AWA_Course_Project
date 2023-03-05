@@ -2,7 +2,7 @@ import {useParams} from 'react-router-dom'
 import {useEffect, useState} from 'react'
 
 
-function Data() {
+function MessageBoard() {
     const {id} = useParams()
     const [data, setData] = useState("");
     
@@ -15,9 +15,9 @@ function Data() {
     
     return (
         <div>
-            {id} – {data.name}
+            {id} – {data.comment}
         </div>
     )
 }
 
-export default Data
+export default MessageBoard

@@ -1,3 +1,4 @@
+require('dotenv').config();
 var express = require('express');
 var router = express.Router();
 const bcrypt = require("bcryptjs");
@@ -29,7 +30,7 @@ router.get('/listx', (req, res) => {
 router.post('/login', upload.none(), (req, res, next) => {
   console.log(req.body);
 
-  User.findOne({username: req.body.password}, (err, user) => {
+  User.findOne({username: req.body.username}, (err, user) => {
     if (err) throw err;
     if(!user) {
       return res.status(403).json({message: "Login failed :("});
@@ -53,49 +54,57 @@ router.post('/login', upload.none(), (req, res, next) => {
               res.json({success: true, token});
             }
           );
+        } else {
+          return res.status(403).json({message: "Login failed :("});
         }
       })
     }
   })
+
+  //for debugging
+  console.log("All users:")
+  User.find({}).exec(function(err, users) {
+    if (err) throw err;
+    console.log(users);
+  }); 
 });
 
 router.get('/register', (req, res, next) => {
 
 });
 
-router.post('/register',
-  body("username").isLength({min: 3}).trim().escape(),
-  body("password").isLength({min: 5}),
-  (req, res, next) => {
+router.post("/register",
+  body("username").isLength({ min: 3 }).trim().escape(),
+  body("email").isEmail().normalizeEmail(),
+  body("password").isLength({ min: 5 }),
+  async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({errors: errors.array()});
+      return res.status(400).json({ errors: errors.array() });
     }
-    User.findOne({username: req.body.username}, (err, user) => {
-      if (err) {
-        console.log(err);
-        throw err
-      };
+
+    try {
+      const user = await User.findOne({ username: req.body.username });
+
       if (user) {
-        return res.status(403).json({username: "Username already in use."});
-      } else {
-        bcrypt.genSalt(10, (err, salt) => {
-          bcrypt.hash(req,body,password, salt, (err, hash) => {
-            if (err) throw err;
-            User.create(
-              {
-                username: req.body.username,
-                password: hash
-              },
-              (err, ok) => {
-                if (err) throw err;
-                return res.redirect("/users/login");
-              }
-            );
-          });
-        });
+        return res.status(403).json({ username: "Username already in use." });
       }
-    });
-});
+
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(req.body.password, salt);
+
+      await User.create({
+        username: req.body.username,
+        email: req.body.email,
+        password: hash,
+      });
+
+      return res.redirect("/login");
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ error: "Server error" });
+    }
+  }
+);
 
 module.exports = router;

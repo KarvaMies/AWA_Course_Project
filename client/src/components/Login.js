@@ -1,44 +1,68 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react';
 
-function Login({setJWT, jwt, setUser}) {
+function Login({ setJWT, setUser, toggleForm }) {
+  const [userData, setUserData] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
 
-    const [userData, setUserData] = useState({})
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-    const submit = (e) => {
-        e.preventdefault()
+    fetch('/users/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData),
+      mode: 'cors'
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.token) {
+          setJWT(data.token);
+          setUser(JSON.parse(Buffer.from(data.token.split('.')[1], "base64").toString()));
+        } else {
+          setErrorMessage(data.message);
+        }
+      });
+  };
 
-        fetch("/users/login", {
-            method: "POST",
-            headers: {
-                "Content-type": "application/json"
-            },
-            body: JSON.stringify(userData),
-            mode: "cors"
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data)
-            if(data.token) {
-                setJWT(data.token)
-                setUser(JSON.parse(Buffer.from(data.token.split(".")[1], "base64").toString()))
-            }
-        })
-    }
-
-    const handleChange = (e) => {
-        setUserData({...userData, [e.target.name]: e.target.value})
-    }
+  const handleChange = (e) => {
+    setUserData({ ...userData, [e.target.name]: e.target.value });
+  };
 
   return (
     <div>
-        <h2>Login</h2>
-        <form onSubmit={submit} onChange={handleChange}>
-            <input type="text" name='username' />
-            <input type="password" name='password' />
-            <input type="submit" />
-        </form>
+      <h2>Login</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="username">Username:</label>
+          <input
+            type="text"
+            name="username"
+            id="username"
+            placeholder="Enter username"
+            required
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Enter password"
+            required
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <button type="submit">Login</button>
+        </div>
+        {errorMessage && <p>{errorMessage}</p>}
+      </form>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;
