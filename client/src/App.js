@@ -1,10 +1,12 @@
 import './App.css';
 import { useEffect, useState } from 'react';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
-import Message from './components/Message';
+import ThreadList from './components/ThreadList';
 import MessageBoard from './components/MessageBoard';
 import Login from './components/Login';
 import Register from './components/Register';
+//import NewThread from './components/NewThread';
+import Thread from './components/Thread';
 
 function App() {
 
@@ -14,23 +16,12 @@ function App() {
   const [showRegister, setShowRegister] = useState(false)
 
   useEffect(() => {
-    fetch("/api/data")
+    fetch("/api/threads")
       .then(response => response.json())
       .then(json => setData(json))
 
   }, [])
 
-  /*
-  let showRegister = false;
-  const showRegisterChange = () => {
-    showRegister ? showRegister = false : showRegister = true;
-  }
-  */
-
-  const handleLogout = () => {
-    setJWT("");
-    setUser({});
-  }
 
   return (
     <Router>
@@ -43,7 +34,7 @@ function App() {
       ) : (
         <>
           {!showRegister ? (
-            <Login setJWT={setJWT} setUser={setUser} jwt={jwt} setShowRegister{...setShowRegister} />
+            <Login setJWT={setJWT} setUser={setUser} jwt={jwt} setShowRegister={setShowRegister} />
           ) : (
             <Register setShowRegister={setShowRegister} setJWT={setJWT} />
           )}
@@ -53,18 +44,19 @@ function App() {
 
 
       <h1>Page</h1>
-      <table><tr><th>USER</th><th>CODE/COMMENT</th><th>DATE</th><th></th></tr>
-        <tbody>
-          {data.map((d) => (
-            <Message key={d.id} data={d} />
-          ))}
+      <table>
+      <tbody>
+        <tr><th>THREAD ID</th><th>USER</th><th>TITLE</th><th>PUBLISHED</th><th></th></tr>
+        {data.map((d) => (
+          <ThreadList key={d._id} data={d} />
+        ))}
         </tbody>
       </table>
       <Routes>
-        <Route path="/data/:id" element={<MessageBoard />}/>
+        <Route path="/thread/:id" element={<MessageBoard />}/>
       </Routes>
+      <Thread />
       
-
       </div>
     </Router>
   );

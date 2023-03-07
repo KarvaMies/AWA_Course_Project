@@ -7,7 +7,10 @@ function MessageBoard() {
     const [data, setData] = useState("");
     
     useEffect(() => {
-        fetch("/api/data/"+ id)
+        console.log("--------------------------id + data.text----------------");
+        console.log(id + "     " + data.text);
+        console.log("--------------------------------------------------------")
+        fetch("/api/thread/"+ id)
             .then(response => response.json())
             .then(json => setData(json))
 
@@ -15,7 +18,7 @@ function MessageBoard() {
     
     return (
         <div>
-            {id} – {data.comment}
+            {id} – {data.text}
         </div>
     )
 }
