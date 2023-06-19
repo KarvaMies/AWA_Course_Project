@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-function NewThread({ jwt, user, setData, setNewThreadPressed }) {
-  const [threadData, setThreadData] = useState({});
+function NewComment({ jwt, id, user, setData, setNewCommentPressed }) {
+  const [commentData, setCommentData] = useState({});
 
   const submit = (e) => {
     e.preventDefault();
 
-    console.log(`userID: ${user}, title: ${threadData.title}, text: ${threadData.text}`);
+    console.log(`id: ${id} userID: ${user}, title: ${commentData.title}, text: ${commentData.text}`);
     console.log(user);
     
-    fetch('/threads/new', {
+    fetch(`/threads/${id}/comment`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -19,8 +19,7 @@ function NewThread({ jwt, user, setData, setNewThreadPressed }) {
       body: JSON.stringify({
         ownerID: user.id,
         owner: user.username,
-        title: threadData.title,
-        text: threadData.text
+        text: commentData.text,
       })
     })
       .then(response => response.json())
@@ -32,21 +31,21 @@ function NewThread({ jwt, user, setData, setNewThreadPressed }) {
 
         setData(prevData => [...prevData, data]);
 
-        setThreadData({});
-        setNewThreadPressed(false);
+        setCommentData({});
+        setNewCommentPressed(false);
       })
       .catch(error => {
-        console.error('Error creating new thread:', error);
+        console.error('Error creating new comment:', error);
       });
       
   };
 
   const handleChange = (e) => {
-    setThreadData({ ...threadData, [e.target.name]: e.target.value });
+    setCommentData({ ...commentData, [e.target.name]: e.target.value });
   };
 
   const handleCancel = () => {
-    setNewThreadPressed(false);
+    setNewCommentPressed(false);
   }
 
   return (
@@ -60,11 +59,11 @@ function NewThread({ jwt, user, setData, setNewThreadPressed }) {
         <textarea id="text" name="text" rows="7" cols="75" placeholder="Describe your problem here" required onChange={handleChange}></textarea>
       </div>
       <div>
-        <button type="submit">Create Thread</button>
+        <button type="submit">Create Comment</button>
         <Link to={"http://localhost:3000"} onClick={handleCancel} >Cancel</Link>
       </div>
     </form>
   );
 }
 
-export default NewThread;
+export default NewComment;

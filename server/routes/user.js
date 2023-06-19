@@ -12,19 +12,12 @@ const storage = multer.memoryStorage();
 const upload = multer({storage})
 
 
-/* GET users listing. */
-router.get('/list', validateToken, (req, res, next) => {
+router.get('/list'/*, validateToken*/, (req, res, next) => {
   User.find({}, (err, users) => {
     if (err) return next(err);
+    console.log(users);
     res.json(users);
   })
-});
-
-router.get('/listx', (req, res) => {
-  User.find({}, (err, users) => {
-    console.log(users);
-  })
-  res.json({status: "ok"})
 });
 
 router.post('/login', upload.none(), (req, res, next) => {
@@ -33,7 +26,7 @@ router.post('/login', upload.none(), (req, res, next) => {
   User.findOne({username: req.body.username}, (err, user) => {
     if (err) throw err;
     if(!user) {
-      return res.status(403).json({message: "Login failed :("});
+      return res.status(403).json({message: "Invalid credentials"});
     } else {
       bcrypt.compare(req.body.password, user.password, (err, isMatch) => {
         if (err) throw err;
@@ -42,7 +35,6 @@ router.post('/login', upload.none(), (req, res, next) => {
             id: user._id,
             username: user.username
           }
-          console.log(process.env.SECRET)
           jwt.sign(
             jwtPayload,
             process.env.SECRET,
@@ -50,60 +42,62 @@ router.post('/login', upload.none(), (req, res, next) => {
               expiresIn: 120
             },
             (err, token) => {
-              console.log(err)
+              if (err) throw err;
               res.json({success: true, token});
             }
           );
         } else {
-          return res.status(403).json({message: "Login failed :("});
+          return res.status(403).json({message: "Invalid credentials"});
         }
       })
     }
   })
 
   //for debugging
-  console.log("All users:")
+  /*console.log("All users:")
   User.find({}).exec(function(err, users) {
     if (err) throw err;
     console.log(users);
-  }); 
-});
-
-router.get('/register', (req, res, next) => {
-
+  });
+  */ 
 });
 
 router.post("/register",
   body("username").isLength({ min: 3 }).trim().escape(),
   body("email").isEmail().normalizeEmail(),
   body("password").isLength({ min: 5 }),
-  async (req, res) => {
+  (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    try {
-      const user = await User.findOne({ username: req.body.username });
-
+    User.findOne({ username: req.body.username }, (err, user) => {
+      if (err) {
+        console.log(err);
+        throw err;
+      };
       if (user) {
         return res.status(403).json({ username: "Username already in use." });
+      } else {
+        bcrypt.genSalt(10, (err, salt) => {
+          bcrypt.hash(req.body.password, salt, (err, hash) => {
+            if (err) throw err;
+            User.create(
+              {
+              username: req.body.username,
+              email: req.body.email,
+              password: hash,
+              },
+              (err, ok) => {
+                if (err) throw err;
+                return res.redirect("/login");
+              }
+            );
+          })
+        })
       }
-
-      const salt = await bcrypt.genSalt(10);
-      const hash = await bcrypt.hash(req.body.password, salt);
-
-      await User.create({
-        username: req.body.username,
-        email: req.body.email,
-        password: hash,
-      });
-
-      return res.redirect("/login");
-    } catch (err) {
-      console.log(err);
-      return res.status(500).json({ error: "Server error" });
-    }
+    })
   }
 );
 

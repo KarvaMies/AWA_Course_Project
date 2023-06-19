@@ -9,11 +9,13 @@ const data = [
     {"_id": 4, "owner": "admin", "title": "Hello World!", "text": "console.log(\"Hello world!\");", "date": new Date("2023-02-05T12:15:00Z"), "refers": ""},
     {"_id": 5, "owner": "admin", "title": "For loop", "text": "for (let i = 0; i < 5; i++) {console.log(\"Hi!\");}", "date": new Date("2023-03-01T21:00:00Z"), "refers": ""},
     {"_id": 6, "owner": "admin", "title": "title4", "text": "wasd", "date": Date.now(), "refers": ""},
+    {"_id": 7, "owner": "joku random", "title": "tekstiä", "text": "random tekstiä", "date": new Date("2023-06-14T15:45:00Z"), "refers": ""},
+    {"_id": "-", "owner": "-", "title": "-", "text": "-", "date": "-", "refers": ""},
 ]
 
 
 router.get('/threads', (req, res, next) => {
-  console.log(data)
+  //console.log(data)
   res.json(data);
 });
 
@@ -23,3 +25,5 @@ router.get('/thread/:id', function(req, res, next) {
 
 
 module.exports = router;
+
+//Ei käytösä tällä hetkellä

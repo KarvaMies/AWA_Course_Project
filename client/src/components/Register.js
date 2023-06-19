@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function Register({ setJWT, toggleForm }) {
+function Register({ setJWT }) {
   const [userData, setUserData] = useState({});
   const [passwordsMatch, setPasswordsMatch] = useState(true);
 
@@ -12,7 +12,7 @@ function Register({ setJWT, toggleForm }) {
       return;
     }
 
-    fetch('/users/register', {
+    fetch('/user/register', {
       method: 'POST',
       headers: {
         'Content-type': 'application/json'

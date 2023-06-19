@@ -1,27 +1,39 @@
 import './App.css';
 import { useEffect, useState } from 'react';
-import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
+import {BrowserRouter as Router, Routes, Route, Link} from 'react-router-dom'
 import ThreadList from './components/ThreadList';
-import MessageBoard from './components/MessageBoard';
+//import MessageBoard from './components/MessageBoard';
 import Login from './components/Login';
 import Register from './components/Register';
-//import NewThread from './components/NewThread';
 import Thread from './components/Thread';
+import NewThread from './components/NewThread';
 
 function App() {
-
   const [data, setData] = useState([])
   const [jwt, setJWT] = useState("")
   const [user, setUser] = useState({})
   const [showRegister, setShowRegister] = useState(false)
-
+  const [newThreadPressed, setNewThreadPressed] = useState(false)
+  
   useEffect(() => {
-    fetch("/api/threads")
+    fetch("/threads/get")
       .then(response => response.json())
-      .then(json => setData(json))
-
+      .then(json => {
+        console.log(json)
+        setData(json)
+      })
   }, [])
+  
+  const handleNewThread = (newThread) => {
+    setData(prevData => {
+      return [...prevData, newThread];
+    });
+  };
 
+  const handleLogout = () => {
+    setJWT("");
+    setUser({});
+  };
 
   return (
     <Router>
@@ -29,16 +41,18 @@ function App() {
       {jwt ? (
         <>
           <h2>Welcome {user.username}!</h2>
-          <button onClick={() => {setJWT(""); setUser({})}}>Logout</button>
+          <button onClick={handleLogout}>Logout</button>
         </>
       ) : (
         <>
           {!showRegister ? (
-            <Login setJWT={setJWT} setUser={setUser} jwt={jwt} setShowRegister={setShowRegister} />
+            <Login setJWT={setJWT} jwt={jwt} setUser={setUser} setShowRegister={setShowRegister} />
           ) : (
             <Register setShowRegister={setShowRegister} setJWT={setJWT} />
           )}
-          <button onClick={() => setShowRegister(!showRegister)}>{showRegister ? "Already have an account?" : "Register instead"}</button>
+          <button onClick={() => setShowRegister(!showRegister)}>
+            {showRegister ? "Already have an account?" : "Register instead"}
+          </button>
         </>
       )}
 
@@ -46,20 +60,54 @@ function App() {
       <h1>Page</h1>
       <table>
       <tbody>
-        <tr><th>THREAD ID</th><th>USER</th><th>TITLE</th><th>PUBLISHED</th><th></th></tr>
+        <tr>
+          <th>CREATOR</th>
+          <th>TITLE</th>
+          <th>PUBLISHED</th>
+          <th></th>
+        </tr>
         {data.map((d) => (
           <ThreadList key={d._id} data={d} />
         ))}
-        </tbody>
+      </tbody>
       </table>
+      {jwt && !newThreadPressed ?
+        <Link to="/threads/new">
+          <button onClick={() => setNewThreadPressed(true)}>Create New Thread</button>
+        </Link> : ""
+      }
       <Routes>
-        <Route path="/thread/:id" element={<MessageBoard />}/>
+        <Route path="/threads/:id" element={<Thread />}/>
+        <Route
+          path="/threads/new"
+          element={
+            <NewThread
+              jwt={jwt}
+              user={user}
+              setData={setData}
+              handleNewThread={handleNewThread}
+              setNewThreadPressed={setNewThreadPressed}
+            />
+          }
+        />
       </Routes>
-      <Thread />
-      
       </div>
     </Router>
   );
 }
 
 export default App;
+
+
+/* TODO:
+  App.js ja Thread.js (->) sama rakenne, App.js threadeille, Thread.js kommenteille
+  jostain syystä NewComment ei kuitenkaan renderää
+  Selvitä syy ja korjaa, jotta painamalla 'New Comment' -nappia vastaavat tekstikenttä ilmestyy
+  kuin painamalla 'Create New Thread' nappia eikä koko Thread vain katoaisi
+
+
+  Routes -kohta rivillä 79 -> :
+  1. mahdollistaa threadin katsomisen
+  2. tuo uuden threadin luomista varten tekstikentät
+  -- vastaava on Thread.js -componentissa oleva route rivillä 87
+*/

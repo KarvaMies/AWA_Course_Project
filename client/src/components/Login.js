@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 
-function Login({ setJWT, setUser, toggleForm }) {
+function Login({ setJWT, jwt, setUser }) {
   const [userData, setUserData] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    fetch('/users/login', {
+    fetch('/user/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -19,6 +19,7 @@ function Login({ setJWT, setUser, toggleForm }) {
       .then((data) => {
         if (data.token) {
           setJWT(data.token);
+          console.log(JSON.parse(Buffer.from(data.token.split('.')[1], "base64").toString()))
           setUser(JSON.parse(Buffer.from(data.token.split('.')[1], "base64").toString()));
         } else {
           setErrorMessage(data.message);

@@ -34,3 +34,5 @@ const MessageThread = ({ messages }) => {
 };
 
 export default MessageThread;
+
+// Ei käytössä tällä hetkellä
