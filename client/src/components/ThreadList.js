@@ -2,6 +2,8 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 
 function ThreadList({ 'data': thread }) {
+  console.log("thread in ThreadList component:")
+  console.log(thread)
 
   const date = moment(thread.date, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
   

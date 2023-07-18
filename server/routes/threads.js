@@ -3,6 +3,14 @@ const router = express.Router();
 const Thread = require('../models/Thread');
 const Comment = require('../models/Comment');
 
+router.get('/list', (req, res, next) => {
+  Thread.find({}, (err, threads) => {
+    if (err) return next(err);
+    console.log(threads);
+    res.json(threads);
+  })
+});
+
 router.post('/new', (req, res, next) => {
   console.log(req.body);
   
@@ -14,11 +22,14 @@ router.post('/new', (req, res, next) => {
       text: req.body.text,
       date: Date.now()
     },
-    (err, ok) => {
-      if (err) throw err;
-      return res.redirect("/")
+    (err, thread) => {
+      if (err) {
+        console.error('Error creating new thread:', err);
+        return res.status(500).json({ message: 'Error creating new thread' });
+      }
+      return res.status(201).json(thread);
     }
-  )
+  );
 });
 
 router.get('/get', (req, res, next) => {
@@ -61,26 +72,9 @@ router.post('/:id/comment', async (req, res) => {
         .populate('comments')
         .exec((err, updatedThread) => {
           if (err) throw err;
-          res.status(200).json(updatedThread);
+          res.status(200).json({ success: "ok"});
         });
     })
-  
-
-
-  try {
-    const thread = await Thread.findById(req.params.id);
-    const comment = new Comment({
-      owner: req.body.owner,
-      text: req.body.text
-    });
-    await comment.save();
-    thread.comments.push(comment);
-    await thread.save();
-    res.json(comment);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
 });
 
 router.get('/:id', (req, res) => {

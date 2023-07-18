@@ -12,7 +12,7 @@ const storage = multer.memoryStorage();
 const upload = multer({storage})
 
 
-router.get('/list'/*, validateToken*/, (req, res, next) => {
+router.get('/list', (req, res, next) => {
   User.find({}, (err, users) => {
     if (err) return next(err);
     console.log(users);
@@ -52,14 +52,6 @@ router.post('/login', upload.none(), (req, res, next) => {
       })
     }
   })
-
-  //for debugging
-  /*console.log("All users:")
-  User.find({}).exec(function(err, users) {
-    if (err) throw err;
-    console.log(users);
-  });
-  */ 
 });
 
 router.post("/register",

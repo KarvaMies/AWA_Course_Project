@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function Login({ setJWT, jwt, setUser }) {
+function Login({ handleLogin }) {
   const [userData, setUserData] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -18,9 +18,21 @@ function Login({ setJWT, jwt, setUser }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.token) {
+          handleLogin(data.token);
+          /* canha systeemi -> poista jos uus toimii
+          localStorage.setItem('jwt', data.token);
+          const user = JSON.parse(Buffer.from(data.token.split('.')[1], "base64").toString());
+          console.log("Logging in:")
+          console.log(user);
+          setUser(user);
+          */
+
+
+          /* vielä vanhempi systeemi -> poista jos uus toimii
           setJWT(data.token);
           console.log(JSON.parse(Buffer.from(data.token.split('.')[1], "base64").toString()))
           setUser(JSON.parse(Buffer.from(data.token.split('.')[1], "base64").toString()));
+          */
         } else {
           setErrorMessage(data.message);
         }
@@ -60,8 +72,8 @@ function Login({ setJWT, jwt, setUser }) {
         <div>
           <button type="submit">Login</button>
         </div>
-        {errorMessage && <p>{errorMessage}</p>}
       </form>
+      {errorMessage && <p>{errorMessage}</p>}
     </div>
   );
 }
