@@ -48,11 +48,11 @@ router.get('/delete', (req, res, next) => {
   })
 })
 
-router.get('/:id/comment', (req, res) => {
+router.get('/:id/comment/new', (req, res) => {
   res.json({ success: "ok"})
 })
 
-router.post('/:id/comment', async (req, res) => {
+router.post('/:id/comment/new', async (req, res) => {
   console.log(req.body);
 
   const newComment = new Comment({

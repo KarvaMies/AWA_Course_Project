@@ -92,7 +92,7 @@ function App() {
           </Link> : ""
         }
         <Routes>
-          <Route path="/threads/:id" element={<Thread />}/>
+          <Route path="/threads/:id/*" element={<Thread />}/>
           <Route
             path="/threads/new"
             element={

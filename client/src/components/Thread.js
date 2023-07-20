@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
-import Comments from './Comments';
+import Comment from './Comment';
 import moment from 'moment';
 import NewComment from './NewComment';
 
@@ -16,16 +16,21 @@ function Thread() {
     fetch(`/threads/${id}`)
       .then(response => response.json())
       .then(data => {
+        console.log("-----fetch----");
         console.log("data.thread:");
         console.log(data.thread);
         setThread(data.thread);
-        setComments(data.comments);
+        console.log(`data.thread.comments: ${data.thread.comments}`);
+        console.log(`data.thread.comments[0]:`)
+        console.log(data.thread.comments[0])
+        console.log(data.thread.comments[1].text)
+        setComments(data.thread.comments);
+        console.log("--------------");
       })
       .catch(error => {
         console.error('Error retrieving thread:', error);
       });
-      console.log("Thread:")
-      console.log(thread)
+      
   }, [id]);
 
   useEffect(() => {
@@ -47,8 +52,7 @@ function Thread() {
   
   const formattedDate = date.isBefore(moment().subtract(1, 'day'))
     ? date.format('D.M.YYYY H:mm') : date.fromNow();
-
-
+  
   return (
     <div className="App">
       <h2>{thread.title}</h2>
@@ -61,15 +65,19 @@ function Thread() {
         </tr>
         {thread.comments && thread.comments.length !== 0 && (
           thread.comments.map((comment) => (
-            <Comments key={comment._id} comment={comment} />
+            <Comment key={comment._id} comment={comment} />
           ))
         )}
       </tbody>
       </table>
+      {jwt && !newCommentPressed ?
+        <Link to={`/threads/${id}/comment/new`}>
+          <button onClick={() => setNewCommentPressed(true)}>New Comment</button>
+        </Link> : ""
+      }
       <Routes>
-        
         <Route
-          path={`/threads/${id}/comment`}
+          path={`/threads/${id}/comment/new`}
           element={
             <NewComment
               jwt={jwt}
@@ -82,57 +90,8 @@ function Thread() {
           }
         />
       </Routes>
-      {jwt && !newCommentPressed ?
-        <Link to={`/threads/${id}/comment`}>
-          <button onClick={() => setNewCommentPressed(true)}>New Comment</button>
-        </Link> : ""
-      }
     </div>
   );
 }
 
 export default Thread;
-
-//TODO! kommenttien lisäys
-
-  /*<Route path="threads/:id/comment" element={<Comment />} />
-
-        {thread.comments && thread.comments.length !== 0 && (
-          comments.map((d) => (
-            <Comments key={d._id} comment={d} />
-          ))
-        )}
-
-
-
-
-  const handleNewComment = (comment) => {
-    fetch(`/threads/${id}/comment`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ comment: comment })
-    })
-      .then(response => response.json())
-      .then(data => {
-        setThread(prevThread => {
-          return {
-            ...prevThread,
-            comments: [...prevThread.comments, data]
-          };
-        });
-      });
-  };
-  */
-
-/* </tr> ja </tbody> väliin
-{thread.comments.map((d) => (
-  <Comments key={d._id} data={d} />
-))}
-*/
-
-/* </table> ja {jwt väliin
-<MessageThread comments={thread.comments} />
-<MessageForm onCommentSubmit={handleNewCommentSubmit} />
-*/
