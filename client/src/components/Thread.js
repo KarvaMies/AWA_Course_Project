@@ -29,8 +29,7 @@ function Thread() {
       })
       .catch(error => {
         console.error('Error retrieving thread:', error);
-      });
-      
+      }); 
   }, [id]);
 
   useEffect(() => {
@@ -57,27 +56,29 @@ function Thread() {
     <div className="App">
       <h2>{thread.title}</h2>
       <table>
-      <tbody>
-        <tr>
-          <th>{thread.owner}</th>
-          <th>{thread.text}</th>
-          <th>{formattedDate}</th>
-        </tr>
-        {thread.comments && thread.comments.length !== 0 && (
-          thread.comments.map((comment) => (
-            <Comment key={comment._id} comment={comment} />
-          ))
-        )}
-      </tbody>
+        <tbody>
+          <tr>
+            <th>{thread.owner}</th>
+            <th>{thread.text}</th>
+            <th>{formattedDate}</th>
+          </tr>
+          {thread.comments && thread.comments.length !== 0 && (
+            thread.comments.map((comment) => (
+              <Comment key={comment._id} comment={comment} />
+            ))
+          )}
+        </tbody>
       </table>
+
       {jwt && !newCommentPressed ?
         <Link to={`/threads/${id}/comment/new`}>
           <button onClick={() => setNewCommentPressed(true)}>New Comment</button>
         </Link> : ""
       }
+
       <Routes>
         <Route
-          path={`/threads/${id}/comment/new`}
+          path={`/threads/:id/comment/new`}
           element={
             <NewComment
               jwt={jwt}
