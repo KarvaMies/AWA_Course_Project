@@ -15,14 +15,11 @@ const upload = multer({storage})
 router.get('/list', (req, res, next) => {
   User.find({}, (err, users) => {
     if (err) return next(err);
-    console.log(users);
     res.json(users);
   })
 });
 
 router.post('/login', upload.none(), (req, res, next) => {
-  console.log(req.body);
-
   User.findOne({username: req.body.username}, (err, user) => {
     if (err) throw err;
     if(!user) {
@@ -52,6 +49,7 @@ router.post('/login', upload.none(), (req, res, next) => {
       })
     }
   })
+  console.log("User logged in succesfully.")
 });
 
 router.post("/register",
@@ -66,7 +64,7 @@ router.post("/register",
 
     User.findOne({ username: req.body.username }, (err, user) => {
       if (err) {
-        console.log(err);
+        console.error(err);
         throw err;
       };
       if (user) {
@@ -90,6 +88,7 @@ router.post("/register",
         })
       }
     })
+    console.log("Registered new user succesfully.")
   }
 );
 

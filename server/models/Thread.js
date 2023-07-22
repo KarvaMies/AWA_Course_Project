@@ -12,10 +12,3 @@ let  threadSchema = new Schema ({
 })
 
 module.exports = mongoose.model("Thread", threadSchema);
-
-
-
-/*
-todo: tee testi thread, lisää kommentti (implementoi kommentin tekeminen oikein tohon tiedostoon -> (thread.js))
-ja tsekkaa et toimii oikein
-*/

@@ -1,3 +1,4 @@
+import '../App.css'
 import { useEffect, useState } from 'react';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
 import Comment from './Comment';
@@ -16,20 +17,12 @@ function Thread() {
     fetch(`/threads/${id}`)
       .then(response => response.json())
       .then(data => {
-        console.log("-----fetch----");
-        console.log("data.thread:");
-        console.log(data.thread);
         setThread(data.thread);
-        console.log(`data.thread.comments: ${data.thread.comments}`);
-        console.log(`data.thread.comments[0]:`)
-        console.log(data.thread.comments[0])
-        console.log(data.thread.comments[1].text)
         setComments(data.thread.comments);
-        console.log("--------------");
       })
       .catch(error => {
         console.error('Error retrieving thread:', error);
-      }); 
+      });
   }, [id]);
 
   useEffect(() => {
@@ -37,7 +30,6 @@ function Thread() {
       const decodedToken = jwt.split('.')[1];
       const decodedUser = JSON.parse(atob(decodedToken));
       setUser(decodedUser);
-
     }
   }, [jwt]);
 
@@ -59,7 +51,7 @@ function Thread() {
         <tbody>
           <tr>
             <th>{thread.owner}</th>
-            <th>{thread.text}</th>
+            <th className='code-cell'>{thread.text}</th>
             <th>{formattedDate}</th>
           </tr>
           {thread.comments && thread.comments.length !== 0 && (
@@ -72,7 +64,7 @@ function Thread() {
 
       {jwt && !newCommentPressed ?
         <Link to={`/threads/${id}/comment/new`}>
-          <button onClick={() => setNewCommentPressed(true)}>New Comment</button>
+          <button onClick={() => {setNewCommentPressed(true)}}>New Comment</button>
         </Link> : ""
       }
 
@@ -87,6 +79,7 @@ function Thread() {
               setComments={setComments}
               handleNewComment={handleNewComment}
               setNewCommentPressed={setNewCommentPressed}
+              thread={thread}
             />
           }
         />

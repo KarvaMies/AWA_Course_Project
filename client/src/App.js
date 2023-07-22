@@ -6,6 +6,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Thread from './components/Thread';
 import NewThread from './components/NewThread';
+import NewComment from './components/NewComment';
 
 function App() {
   const [data, setData] = useState([]);
@@ -13,12 +14,12 @@ function App() {
   const [user, setUser] = useState({});
   const [showRegister, setShowRegister] = useState(false);
   const [newThreadPressed, setNewThreadPressed] = useState(false);
+  const [comments, setComments] = useState([]);
 
   useEffect(() => {
     fetch("/threads/get")
       .then(response => response.json())
       .then(json => {
-        console.log(json);
         setData(json);
       });
   }, []);
@@ -69,7 +70,6 @@ function App() {
           </>
         )}
 
-
         <h1>Threads</h1>
         <table>
           <tbody>
@@ -84,7 +84,7 @@ function App() {
             ))}
           </tbody>
         </table>
-
+        
         {jwt && !newThreadPressed ?
           <Link to="/threads/new">
             <button onClick={() => setNewThreadPressed(true)}>Create New Thread</button>
@@ -92,7 +92,9 @@ function App() {
         }
         
         <Routes>
-          <Route path="/threads/:id/*" element={<Thread />}/>
+          <Route
+            path="/threads/:id/*"
+            element={<Thread />}/>
           <Route
             path="/threads/new"
             element={
@@ -102,6 +104,16 @@ function App() {
                 setData={setData}
                 handleNewThread={handleNewThread}
                 setNewThreadPressed={setNewThreadPressed}
+              />
+            }
+          />
+          <Route
+            path={`/threads/:id/comment/new`}
+            element={
+              <NewComment
+                jwt={jwt}           
+                user={user}
+                setComments={setComments}
               />
             }
           />

@@ -2,6 +2,7 @@
   text-align: center;
   margin: auto;
   width: 600px;
+  padding: 15px;
 }
 
 .App-logo {
@@ -42,4 +43,30 @@
 table {
   width: 100%;
   border-collapse: collapse;
+}
+
+.code-cell {
+  white-space: pre-wrap;
+  text-align: left;
+}
+
+tr:nth-child(odd) {
+  background-color: #f7f7f7; /* light gray */
+}
+
+tr:nth-child(even) {
+  background-color: #e6e6e6; /* darker gray */
+}
+
+td, th {
+  border-left: 1px solid #969696;
+  padding: 10px ;
+}
+
+td:first-child, th:first-child {
+  border-left: none;
+}
+
+button {
+  margin: 20px
 }

@@ -6,14 +6,11 @@ const Comment = require('../models/Comment');
 router.get('/list', (req, res, next) => {
   Thread.find({}, (err, threads) => {
     if (err) return next(err);
-    console.log(threads);
     res.json(threads);
   })
 });
 
-router.post('/new', (req, res, next) => {
-  console.log(req.body);
-  
+router.post('/new', (req, res, next) => {  
   Thread.create(
     {
       ownerID: req.body.ownerID,
@@ -30,12 +27,12 @@ router.post('/new', (req, res, next) => {
       return res.status(201).json(thread);
     }
   );
+  console.log("New Thread created succesfully.")
 });
 
 router.get('/get', (req, res, next) => {
   Thread.find({}, (err, threads) => {
     if (err) return next(err);
-    console.log(threads);
     res.json(threads);
   })
 });
@@ -53,8 +50,6 @@ router.get('/:id/comment/new', (req, res) => {
 })
 
 router.post('/:id/comment/new', async (req, res) => {
-  console.log(req.body);
-
   const newComment = new Comment({
       ownerID: req.body.ownerID,
       owner: req.body.owner,
@@ -75,6 +70,7 @@ router.post('/:id/comment/new', async (req, res) => {
           res.status(200).json({ success: "ok"});
         });
     })
+  console.log("New comment added succesfully.")
 });
 
 router.get('/:id', (req, res) => {
@@ -93,4 +89,3 @@ router.get('/:id', (req, res) => {
 });
 
 module.exports = router;
-

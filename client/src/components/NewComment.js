@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
-function NewComment({ jwt, id, user, setData, setNewCommentPressed }) {
+function NewComment({ jwt, user, setComments }) {
   const [commentData, setCommentData] = useState({});
   const [commentCreated, setCommentCreated] = useState(false);
+  const { id } = useParams();
 
   const submit = (e) => {
-    e.preventDefault();
-
-    console.log(`id: ${id} userID: ${user}, title: ${commentData.title}, text: ${commentData.text}`);
-    console.log(user);
-    console.log(jwt);
-    
-    fetch(`/threads/${id}/comment`, {
+    e.preventDefault();    
+    fetch(`/threads/${id}/comment/new`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -26,16 +22,11 @@ function NewComment({ jwt, id, user, setData, setNewCommentPressed }) {
     })
       .then(response => response.json())
       .then(data => {
-        
-        console.log("-----------DATA-----------");
-        console.log(data)
-        console.log("^^^^^^^^^^^DATA^^^^^^^^^^^")
-
-        setData(prevData => [...prevData, data]);
-
+        setComments(prevData => [...prevData, data]);
         setCommentData({});
-        setNewCommentPressed(false);
         setCommentCreated(true);
+
+        window.location.href = "http://localhost:3000/threads/" + id;        
       })
       .catch(error => {
         console.error('Error creating new comment:', error);
@@ -48,25 +39,25 @@ function NewComment({ jwt, id, user, setData, setNewCommentPressed }) {
   };
 
   const handleCancel = () => {
-    setNewCommentPressed(false);
+    window.location.href = "http://localhost:3000/threads/" + id; 
   }
 
   return (
     (commentCreated ? null : (
-      <form onSubmit={submit} onChange={handleChange}>
-        <div>
-          <label htmlFor="title">Title:</label>
-          <input type="text" id="title" name="title" placeholder="Enter title" required onChange={handleChange} />
-        </div>
-        <div>
-          <label htmlFor="text">Text:</label>
-          <textarea id="text" name="text" rows="7" cols="75" placeholder="Describe your problem here" required onChange={handleChange}></textarea>
-        </div>
-        <div>
-          <button type="submit">Create Comment</button>
-          <Link to={"http://localhost:3000"} onClick={handleCancel} >Cancel</Link>
-        </div>
-      </form>
+      <>
+      <br/><br/>
+
+        <form onSubmit={submit} onChange={handleChange}>
+          <div>
+            <label htmlFor="text">Your Comment:</label>
+            <textarea id="text" name="text" rows="7" cols="75" placeholder="Write your comment here" required onChange={handleChange}></textarea>
+          </div>
+          <div>
+            <button type="submit">Submit Comment</button>
+            <Link to={"http://localhost:3000"} onClick={handleCancel} >Cancel</Link>
+          </div>
+        </form>
+      </>
     ))
   );
 }

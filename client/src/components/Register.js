@@ -22,7 +22,6 @@ function Register({ setJWT }) {
     })
     .then(response => response.json())
     .then(data => {
-      console.log(data);
       if (data.token) {
         setJWT(data.token);
       }

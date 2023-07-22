@@ -1,8 +1,7 @@
+import '../App.css';
 import moment from 'moment';
 
 function Comment({ comment }) {
-  console.log("comment in Comments component:")
-  console.log(comment)
   const date = moment(comment.date, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
   
   const formattedDate = date.isBefore(moment().subtract(1, 'day'))
@@ -12,7 +11,7 @@ function Comment({ comment }) {
     <>
       <tr key={comment._id}>
         <td>{comment.owner}</td>
-        <td>{comment.text}</td>
+        <td className='code-cell'>{comment.text}</td>
         <td>{formattedDate}</td>
       </tr>
     </>
