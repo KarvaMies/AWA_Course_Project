@@ -27,6 +27,7 @@ function Thread() {
 
   useEffect(() => {
     if (jwt) {
+      // Parsing the user from jwt
       const decodedToken = jwt.split('.')[1];
       const decodedUser = JSON.parse(atob(decodedToken));
       setUser(decodedUser);
@@ -39,8 +40,8 @@ function Thread() {
     });
   };
 
+  // Formatting the date for the posts/comments
   const date = moment(thread.date, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
-  
   const formattedDate = date.isBefore(moment().subtract(1, 'day'))
     ? date.format('D.M.YYYY H:mm') : date.fromNow();
   

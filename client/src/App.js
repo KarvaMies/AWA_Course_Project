@@ -26,6 +26,7 @@ function App() {
 
   useEffect(() => {
     if (jwt) {
+      // Parsing the user from jwt
       const decodedToken = jwt.split('.')[1];
       const decodedUser = JSON.parse(atob(decodedToken));
       setUser(decodedUser);
